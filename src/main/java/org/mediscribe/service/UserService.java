@@ -40,6 +40,14 @@ public class UserService {
         throw new UserNotFoundException("User not Found");
     }
 
+    public User getUserById(String id) {
+        Optional<User> user = this.userRepository.findUserByUserId(id);
+        if(user.isPresent()){
+            return user.get();
+        }
+        throw new UserNotFoundException("User not Found");
+    }
+
 
     public ResponseEntity<ApiResponseMeta> registerUser(RegisterUser registerUser) {
         User user = new User();

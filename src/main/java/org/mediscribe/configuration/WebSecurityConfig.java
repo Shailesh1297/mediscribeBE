@@ -25,7 +25,11 @@ import java.util.List;
 @EnableWebSecurity
 public class WebSecurityConfig {
     public static final String[] ENDPOINTS_WHITELIST = {
-          "/test", "/authenticate","/register"
+          "/test", "/authenticate","/register", "/chat-ws/**"
+    };
+
+    public static final String[] ORIGINS = {
+      "http://localhost:4200"
     };
 
     @Bean
@@ -60,9 +64,11 @@ public class WebSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults())
+//                .cors(cors -> cors.disable())
                 .authorizeHttpRequests(request ->
                         request
                                 .requestMatchers(ENDPOINTS_WHITELIST).permitAll()
+                                .requestMatchers("/chat-ws/**").permitAll()
                                 .anyRequest().authenticated())
                 .csrf().disable()
                 .httpBasic(Customizer.withDefaults());
@@ -75,9 +81,10 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOrigins(List.of(ORIGINS));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
